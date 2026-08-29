@@ -60,7 +60,7 @@ async function main(): Promise<void> {
         }
         const encoded = await imageToDataUrl(image);
         const text = await describeImage(
-          { baseUrl: cfg.baseUrl, apiKey: cfg.apiKey, model: cfg.model},
+          { baseUrl: cfg.baseUrl ?? DEFAULT_BASE_URL, apiKey: cfg.apiKey, model: cfg.model  ?? DEFAULT_MODEL },
           encoded.dataUrl,
           prompt,
         );

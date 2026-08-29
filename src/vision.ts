@@ -1,4 +1,6 @@
+import { createHash } from "node:crypto";
 import fs from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 
 export const DEFAULT_PROMPT = "What is in this image?";
@@ -80,12 +82,28 @@ export interface VisionRequestConfig {
   model: string;
 }
 
+const CACHE_DIR = path.join(os.tmpdir(), "vision_mcp_cache");
+
+function cacheFileName(dataUrl: string): string {
+  return createHash("sha256").update(dataUrl).digest("hex");
+}
+
 /** Call an OpenAI-compatible chat.completions endpoint with an image and return the text description. */
 export async function describeImage(
   cfg: VisionRequestConfig,
   dataUrl: string,
   prompt?: string,
 ): Promise<string> {
+  const cacheFile = path.join(CACHE_DIR, cacheFileName(dataUrl));
+  try {
+    return await fs.readFile(cacheFile, "utf8");
+  } catch (err) {
+    if ((err as NodeJS.ErrnoException).code !== "ENOENT") {
+      console.warn(`[vision-mcp] failed to read cache: ${(err as Error).message}`);
+    }
+    // cache miss or unreadable cache — fall through to the API
+  }
+
   const endpoint = `${cfg.baseUrl.replace(/\/+$/, "")}/chat/completions`;
   const response = await fetch(endpoint, {
     method: "POST",
@@ -117,5 +135,13 @@ export async function describeImage(
   };
   const content = data.choices?.[0]?.message?.content;
   if (!content) throw new Error("API response contained no description");
+
+  try {
+    await fs.mkdir(CACHE_DIR, { recursive: true });
+    await fs.writeFile(cacheFile, content, "utf8");
+  } catch {
+    // cache is best-effort — ignore write failures
+  }
+
   return content;
 }
