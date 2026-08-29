@@ -1,0 +1,38 @@
+{
+  "name": "vision-mcp",
+  "version": "1.0.0",
+  "description": "MCP server that converts images (JPEG, PNG, GIF, WebP) into text descriptions via an OpenAI-compatible vision model (e.g. DeepSeek).",
+  "type": "module",
+  "bin": {
+    "vision-mcp": "dist/index.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "test": "tsx --test src/*.test.ts"
+  },
+  "keywords": [
+    "mcp",
+    "vision",
+    "image",
+    "description",
+    "deepseek"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.4.3"
+  },
+  "devDependencies": {
+    "@types/node": "^26.4.0",
+    "tsx": "^4.23.12",
+    "typescript": "^7.0.2"
+  }
+}
