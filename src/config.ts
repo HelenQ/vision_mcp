@@ -10,7 +10,7 @@ export interface Config {
 
 export interface SavedConfig {
   path: string;
-  baseUrl: string | undefined;
+  baseUrl: string;
   model: string;
   apiKeySet: boolean;
 }
