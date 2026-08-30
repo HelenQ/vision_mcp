@@ -10,8 +10,7 @@ import {
   saveConfig,
 } from "./config.js";
 import { DEFAULT_PROMPT, describeImage, imageToDataUrl } from "./vision.js";
-
-const VERSION = "1.0.0";
+import { VERSION } from "./version.js";
 
 function configMissingMessage(): string {
   return [
